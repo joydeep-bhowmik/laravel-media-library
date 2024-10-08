@@ -1,0 +1,40 @@
+{
+  "name": "joydeep-bhowmik/laravel-media-library",
+  "description": "A laravel media library for associating files with laravel models",
+  "type": "library",
+  "version": "v1.0.0",
+  "license": "MIT",
+  "keywords": [
+    "laravel",
+    "laravel media library",
+    "file upload1"
+  ],
+  "require": {
+    "laravel/framework": "^11.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "JoydeepBhowmik\\LaravelMediaLibary\\": "src/",
+      "JoydeepBhowmik\\LaravelMediaLibary\\Tests\\": "tests"
+    }
+  },
+  "authors": [
+    {
+      "name": "joydeep-bhowmik",
+      "email": "bhowmikj9432@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "require-dev": {
+    "orchestra/testbench": "^9.4",
+    "pestphp/pest": "^3.1",
+    "pestphp/pest-plugin-laravel": "^3.0",
+    "mockery/mockery": "^1.5"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
+}
