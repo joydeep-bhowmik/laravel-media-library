@@ -2,11 +2,10 @@
 
 namespace JoydeepBhowmik\LaravelMediaLibary\Traits;
 
-
 use App\Models\User;
-use App\Models\Media;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use JoydeepBhowmik\LaravelMediaLibary\Models\Media;
 
 trait HasMedia
 {
@@ -14,12 +13,12 @@ trait HasMedia
 
     private object $__currentMediaCollection;
 
-    function findMediaByUploaderId(string $id)
+    public function findMediaByUploaderId(string $id)
     {
         return Media::where('user_id', $id);
     }
 
-    function findMediaByUploader(User $user)
+    public function findMediaByUploader(User $user)
     {
         return $this->findMediaByUploaderId($user->id);
     }
@@ -37,7 +36,7 @@ trait HasMedia
         return $this->media($collectionName)->get() ? true : false;
     }
 
-    function addMedia(UploadedFile $files)
+    public function addMedia(UploadedFile $files)
     {
         if (is_array($files)) {
             foreach ($files as $file) {
@@ -51,8 +50,7 @@ trait HasMedia
         return $this;
     }
 
-
-    function toCollection(string $name = 'uploads', string $disk = null, $folder = null)
+    public function toCollection(string $name = 'uploads', string $disk = null, $folder = null)
     {
 
         $user = auth()->user();
@@ -61,14 +59,13 @@ trait HasMedia
 
         foreach ($this->__mediaFiles as $file) {
 
-
             $default_directory = config('media.default_directory') ?? 'uploads';
 
             $media = new Media();
 
-            $file_name =  time() . $file->getClientOriginalName();
+            $file_name = time() . $file->getClientOriginalName();
 
-            $media->file_name =  $file_name;
+            $media->file_name = $file_name;
 
             $media->original_file_name = $file->getClientOriginalName();
 
@@ -84,21 +81,20 @@ trait HasMedia
 
             $media->disk = $the_disk;
 
-            $media->directory =  trim($folder, '/');
+            $media->directory = trim($folder, '/');
 
-            if ($file->storeAs(trim($default_directory, '/') . '/' . $folder,   $file_name, $the_disk)) {
+            if ($file->storeAs(trim($default_directory, '/') . '/' . $folder, $file_name, $the_disk)) {
 
                 $media->save();
             }
         }
     }
 
-    function deleteMediaCollection(string $collection)
+    public function deleteMediaCollection(string $collection)
     {
         $media = $this->media($collection);
 
         $the_disk = $disk ?? config('media.disk');
-
 
         $default_directory = config('media.default_directory') ?? 'uploads';
 
@@ -110,12 +106,12 @@ trait HasMedia
         return $media->delete();
     }
 
-    function deleteAllMedia()
+    public function deleteAllMedia()
     {
         return $this->deleteMediaCollection('*');
     }
 
-    function media(string $collection = null)
+    public function media(string $collection = null)
     {
         $media = null;
 
@@ -132,32 +128,29 @@ trait HasMedia
 
         $media = $media->orderBy('ordering');
 
-        $this->__currentMediaCollection =  $media;
+        $this->__currentMediaCollection = $media;
 
-        return  $media;
+        return $media;
     }
 
-
-    function getMedia(string $collection = null)
+    public function getMedia(string $collection = null)
     {
-        return  $this->media($collection)->get();
+        return $this->media($collection)->get();
     }
 
-    function getFirstMedia(string $collection = '*')
+    public function getFirstMedia(string $collection = '*')
     {
-        return  $this->media($collection)?->first();
+        return $this->media($collection)?->first();
     }
-    function getFirstMediaUrl(string $collection = '*')
+    public function getFirstMediaUrl(string $collection = '*')
     {
         return $this->media($collection)?->first()?->getUrl();
     }
 
-    function updateMediaOrdering($items, string $collection = "*")
+    public function updateMediaOrdering($items, string $collection = "*")
     {
         // Extract the photo IDs from the input array
         $ids = collect($items)->pluck('value')->toArray();
-
-
 
         // Fetch all photos that match the given IDs
         $this->media($collection)->whereIn('id', $ids)
