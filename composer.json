@@ -2,7 +2,7 @@
   "name": "joydeep-bhowmik/laravel-media-library",
   "description": "A laravel media library for associating files with laravel models",
   "type": "library",
-  "version": "v1.0.0",
+  "version": "v1.0.1",
   "license": "MIT",
   "keywords": [
     "laravel",
