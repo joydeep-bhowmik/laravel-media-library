@@ -22,7 +22,8 @@ class Media extends Model
         'model_type',
         'user_id',
         'disk',
-        'ordering'
+        'directory', // Add this
+        'ordering',
     ];
 
     /**
@@ -54,7 +55,7 @@ class Media extends Model
 
             // Check if the file exists before attempting to delete
             if (Storage::disk($disk)->exists($filePath)) {
-                return Storage::disk($disk)->delete($filePath); // Delete the file
+                Storage::disk($disk)->delete($filePath); // Delete the file
             }
             if (method_exists(static::class, 'onDelete')) {
                 try {
