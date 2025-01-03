@@ -25,9 +25,10 @@ trait HasMedia
 
     protected static function bootHasMedia()
     {
-        return static::deleting(function ($model) {
-            Media::where('model_type', class_basename($model))?->delete();
-            // ...
+        static::deleting(function ($model) {
+            Media::where('model_type', class_basename($model))
+                ->where('model_id', $model->{$model->primaryKey})
+                ->delete();
         });
     }
 
@@ -36,61 +37,52 @@ trait HasMedia
         return $this->media($collectionName)->get() ? true : false;
     }
 
-    public function addMedia(UploadedFile $files)
+    public function addMedia(UploadedFile|array $files)
     {
         if (is_array($files)) {
             foreach ($files as $file) {
-                array_push($this->__mediaFiles, $file);
+                $this->__mediaFiles[] = $file; // Add each file to the array
             }
-            return $this;
+        } else {
+            $this->__mediaFiles[] = $files; // Add the single file to the array
         }
-
-        array_push($this->__mediaFiles, $files);
 
         return $this;
     }
 
+
     public function toCollection(string $name = 'uploads', string $disk = null, $folder = null)
     {
-
         $user = auth()->user();
-
         $the_disk = $disk ?? config('media.disk');
+        $default_directory = config('media.default_directory') ?? 'uploads';
 
         foreach ($this->__mediaFiles as $file) {
-
-            $default_directory = config('media.default_directory') ?? 'uploads';
-
             $media = new Media();
 
             $file_name = time() . $file->getClientOriginalName();
 
             $media->file_name = $file_name;
-
             $media->original_file_name = $file->getClientOriginalName();
-
             $media->mime_type = $file->getMimeType();
-
             $media->collection = $name;
-
             $media->model_id = $this->{$this->primaryKey};
-
             $media->model_type = class_basename($this);
-
             $media->user_id = $user?->id;
-
             $media->disk = $the_disk;
-
             $media->directory = trim($folder, '/');
 
             if ($file->storeAs(trim($default_directory, '/') . '/' . $folder, $file_name, $the_disk)) {
-
                 $media->save();
             }
         }
+
+        // Clear the media files array to avoid duplication in future calls
+        $this->__mediaFiles = [];
     }
 
-    public function deleteMediaCollection(string $collection)
+
+    public function deleteMediaCollection(string $collection, string $disk = null)
     {
         $media = $this->media($collection);
 
